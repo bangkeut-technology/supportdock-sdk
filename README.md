@@ -41,8 +41,25 @@ $result = $client->sendFeedback([
         'appVersion' => '2.0.0',
         'platform' => 'web',
     ],
+    'images' => [                   // optional — up to 3 base64 data URLs (PNG/JPEG/WebP/GIF, each ≤ 2 MB)
+        'data:image/png;base64,iVBOR...',
+    ],
 ]);
 // $result = ['success' => true]
+```
+
+#### Attaching images
+
+```php
+// Read a local file and convert to base64 data URL
+$imageData = file_get_contents('/path/to/screenshot.png');
+$base64 = 'data:image/png;base64,' . base64_encode($imageData);
+
+$client->sendFeedback([
+    'type' => 'bug',
+    'message' => 'UI is broken on this screen',
+    'images' => [$base64],
+]);
 ```
 
 ### List FAQs
@@ -100,13 +117,13 @@ try {
 
 ## API reference
 
-| Method | Description |
-|--------|-------------|
-| `sendFeedback(array $options)` | Submit feedback (bug, feature, question, general) |
-| `listFAQs()` | List all FAQs for the app |
-| `createFAQ(array $options)` | Create a new FAQ entry |
-| `updateFAQ(string $faqId, array $options)` | Update an existing FAQ |
-| `deleteFAQ(string $faqId)` | Delete a FAQ entry |
+| Method                                     | Description                                                            |
+| ------------------------------------------ | ---------------------------------------------------------------------- |
+| `sendFeedback(array $options)`             | Submit feedback (bug, feature, question, general) with optional images |
+| `listFAQs()`                               | List all FAQs for the app                                              |
+| `createFAQ(array $options)`                | Create a new FAQ entry                                                 |
+| `updateFAQ(string $faqId, array $options)` | Update an existing FAQ                                                 |
+| `deleteFAQ(string $faqId)`                 | Delete a FAQ entry                                                     |
 
 ## License
 

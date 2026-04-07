@@ -46,7 +46,8 @@ class SupportDockClient
      *     name?: string,
      *     subject?: string,
      *     metadata?: array<string, string>,
-     *     source?: string
+     *     source?: string,
+     *     images?: string[]
      * } $options
      * @return array{success: bool}
      * @throws SupportDockException
@@ -55,6 +56,17 @@ class SupportDockClient
     {
         if (empty($options['message'])) {
             throw new ValidationException('message is required');
+        }
+
+        if (!empty($options['images'])) {
+            if (count($options['images']) > 3) {
+                throw new ValidationException('Maximum 3 images allowed');
+            }
+            foreach ($options['images'] as $image) {
+                if (!preg_match('/^data:image\/(png|jpeg|webp|gif);base64,/', $image)) {
+                    throw new ValidationException('Images must be base64-encoded data URLs (PNG, JPEG, WebP, or GIF)');
+                }
+            }
         }
 
         $metadata = array_merge($this->defaultMetadata, $options['metadata'] ?? []);
@@ -76,6 +88,9 @@ class SupportDockClient
         }
         if (!empty($metadata)) {
             $body['metadata'] = $metadata;
+        }
+        if (!empty($options['images'])) {
+            $body['images'] = $options['images'];
         }
 
         return $this->request('POST', '/api/feedback/remote', $body);
