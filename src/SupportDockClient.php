@@ -93,7 +93,7 @@ class SupportDockClient
             $body['images'] = $options['images'];
         }
 
-        return $this->request('POST', '/api/feedback/remote', $body);
+        return $this->request('POST', '/api/v1/feedback/remote', $body);
     }
 
     /**
@@ -104,7 +104,7 @@ class SupportDockClient
      */
     public function listFAQs(): array
     {
-        return $this->request('GET', '/api/faqs/remote');
+        return $this->request('GET', '/api/v1/faqs/remote');
     }
 
     /**
@@ -123,7 +123,7 @@ class SupportDockClient
             throw new ValidationException('answer is required');
         }
 
-        return $this->request('POST', '/api/faqs/remote', $options);
+        return $this->request('POST', '/api/v1/faqs/remote', $options);
     }
 
     /**
@@ -140,7 +140,7 @@ class SupportDockClient
             throw new ValidationException('faqId is required');
         }
 
-        return $this->request('PATCH', "/api/faqs/remote/{$faqId}", $options);
+        return $this->request('PATCH', "/api/v1/faqs/remote/{$faqId}", $options);
     }
 
     /**
@@ -156,7 +156,7 @@ class SupportDockClient
             throw new ValidationException('faqId is required');
         }
 
-        return $this->request('DELETE', "/api/faqs/remote/{$faqId}");
+        return $this->request('DELETE', "/api/v1/faqs/remote/{$faqId}");
     }
 
     /**

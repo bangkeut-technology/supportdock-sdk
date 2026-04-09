@@ -1,6 +1,6 @@
 {
     "name": "bangkeut-technology/supportdock-sdk",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "SupportDock PHP SDK — submit feedback and manage FAQs from your PHP application",
     "type": "library",
     "license": "MIT",
