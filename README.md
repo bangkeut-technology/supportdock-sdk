@@ -44,6 +44,9 @@ $result = $client->sendFeedback([
     'images' => [                   // optional — up to 3 base64 data URLs (PNG/JPEG/WebP/GIF, each ≤ 2 MB)
         'data:image/png;base64,iVBOR...',
     ],
+    'attachments' => [              // optional — up to 3 PDFs (each ≤ 5 MB)
+        ['name' => 'report.pdf', 'data' => 'data:application/pdf;base64,JVBERi0...'],
+    ],
 ]);
 // $result = ['success' => true]
 ```
@@ -59,6 +62,20 @@ $client->sendFeedback([
     'type' => 'bug',
     'message' => 'UI is broken on this screen',
     'images' => [$base64],
+]);
+```
+
+#### Attaching PDFs
+
+```php
+// Read a local PDF and convert to base64 data URL
+$pdfData = file_get_contents('/path/to/report.pdf');
+$base64 = 'data:application/pdf;base64,' . base64_encode($pdfData);
+
+$client->sendFeedback([
+    'type' => 'bug',
+    'message' => 'Steps to reproduce are in the attached report',
+    'attachments' => [['name' => 'report.pdf', 'data' => $base64]],
 ]);
 ```
 
@@ -119,7 +136,7 @@ try {
 
 | Method                                     | Description                                                            |
 | ------------------------------------------ | ---------------------------------------------------------------------- |
-| `sendFeedback(array $options)`             | Submit feedback (bug, feature, question, general) with optional images |
+| `sendFeedback(array $options)`             | Submit feedback (bug, feature, question, general) with optional images and PDF attachments |
 | `listFAQs()`                               | List all FAQs for the app                                              |
 | `createFAQ(array $options)`                | Create a new FAQ entry                                                 |
 | `updateFAQ(string $faqId, array $options)` | Update an existing FAQ                                                 |

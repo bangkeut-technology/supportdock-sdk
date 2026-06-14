@@ -47,7 +47,8 @@ class SupportDockClient
      *     subject?: string,
      *     metadata?: array<string, string>,
      *     source?: string,
-     *     images?: string[]
+     *     images?: string[],
+     *     attachments?: array<int, array{name: string, data: string}>
      * } $options
      * @return array{success: bool}
      * @throws SupportDockException
@@ -65,6 +66,20 @@ class SupportDockClient
             foreach ($options['images'] as $image) {
                 if (!preg_match('/^data:image\/(png|jpeg|webp|gif);base64,/', $image)) {
                     throw new ValidationException('Images must be base64-encoded data URLs (PNG, JPEG, WebP, or GIF)');
+                }
+            }
+        }
+
+        if (!empty($options['attachments'])) {
+            if (count($options['attachments']) > 3) {
+                throw new ValidationException('Maximum 3 PDF attachments allowed');
+            }
+            foreach ($options['attachments'] as $attachment) {
+                if (empty($attachment['name'])) {
+                    throw new ValidationException('Each attachment requires a name');
+                }
+                if (!preg_match('/^data:application\/pdf;base64,/', $attachment['data'] ?? '')) {
+                    throw new ValidationException('Attachments must be base64-encoded PDF data URLs');
                 }
             }
         }
@@ -91,6 +106,9 @@ class SupportDockClient
         }
         if (!empty($options['images'])) {
             $body['images'] = $options['images'];
+        }
+        if (!empty($options['attachments'])) {
+            $body['attachments'] = $options['attachments'];
         }
 
         return $this->request('POST', '/api/v1/feedback/remote', $body);

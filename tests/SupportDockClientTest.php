@@ -35,6 +35,46 @@ class SupportDockClientTest extends TestCase
         $client->sendFeedback(['message' => '']);
     }
 
+    public function testSendFeedbackRejectsTooManyAttachments(): void
+    {
+        $client = new SupportDockClient(['apiKey' => 'sdk_test123']);
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Maximum 3 PDF attachments allowed');
+
+        $pdf = ['name' => 'a.pdf', 'data' => 'data:application/pdf;base64,JVBERi0='];
+        $client->sendFeedback([
+            'message' => 'hi',
+            'attachments' => [$pdf, $pdf, $pdf, $pdf],
+        ]);
+    }
+
+    public function testSendFeedbackRejectsAttachmentWithoutName(): void
+    {
+        $client = new SupportDockClient(['apiKey' => 'sdk_test123']);
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Each attachment requires a name');
+
+        $client->sendFeedback([
+            'message' => 'hi',
+            'attachments' => [['name' => '', 'data' => 'data:application/pdf;base64,JVBERi0=']],
+        ]);
+    }
+
+    public function testSendFeedbackRejectsNonPdfAttachment(): void
+    {
+        $client = new SupportDockClient(['apiKey' => 'sdk_test123']);
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Attachments must be base64-encoded PDF data URLs');
+
+        $client->sendFeedback([
+            'message' => 'hi',
+            'attachments' => [['name' => 'a.pdf', 'data' => 'data:image/png;base64,iVBOR']],
+        ]);
+    }
+
     public function testCreateFAQRequiresQuestion(): void
     {
         $client = new SupportDockClient(['apiKey' => 'sdk_test123']);
