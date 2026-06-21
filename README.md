@@ -44,6 +44,9 @@ $result = $client->sendFeedback([
     'images' => [                   // optional — up to 3 base64 data URLs (PNG/JPEG/WebP/GIF, each ≤ 2 MB)
         'data:image/png;base64,iVBOR...',
     ],
+    'videos' => [                   // optional — up to 2 base64 data URLs (MP4/WebM/QuickTime, each ≤ 10 MB)
+        'data:video/mp4;base64,AAAA...',
+    ],
     'attachments' => [              // optional — up to 3 PDFs (each ≤ 5 MB)
         ['name' => 'report.pdf', 'data' => 'data:application/pdf;base64,JVBERi0...'],
     ],
@@ -62,6 +65,20 @@ $client->sendFeedback([
     'type' => 'bug',
     'message' => 'UI is broken on this screen',
     'images' => [$base64],
+]);
+```
+
+#### Attaching videos
+
+```php
+// Read a local video and convert to base64 data URL
+$videoData = file_get_contents('/path/to/screen-recording.mp4');
+$base64 = 'data:video/mp4;base64,' . base64_encode($videoData);
+
+$client->sendFeedback([
+    'type' => 'bug',
+    'message' => 'Screen recording of the crash attached',
+    'videos' => [$base64],
 ]);
 ```
 
@@ -136,7 +153,7 @@ try {
 
 | Method                                     | Description                                                            |
 | ------------------------------------------ | ---------------------------------------------------------------------- |
-| `sendFeedback(array $options)`             | Submit feedback (bug, feature, question, general) with optional images and PDF attachments |
+| `sendFeedback(array $options)`             | Submit feedback (bug, feature, question, general) with optional images, videos, and PDF attachments |
 | `listFAQs()`                               | List all FAQs for the app                                              |
 | `createFAQ(array $options)`                | Create a new FAQ entry                                                 |
 | `updateFAQ(string $faqId, array $options)` | Update an existing FAQ                                                 |
