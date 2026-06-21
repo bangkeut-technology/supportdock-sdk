@@ -48,6 +48,7 @@ class SupportDockClient
      *     metadata?: array<string, string>,
      *     source?: string,
      *     images?: string[],
+     *     videos?: string[],
      *     attachments?: array<int, array{name: string, data: string}>
      * } $options
      * @return array{success: bool}
@@ -66,6 +67,17 @@ class SupportDockClient
             foreach ($options['images'] as $image) {
                 if (!preg_match('/^data:image\/(png|jpeg|webp|gif);base64,/', $image)) {
                     throw new ValidationException('Images must be base64-encoded data URLs (PNG, JPEG, WebP, or GIF)');
+                }
+            }
+        }
+
+        if (!empty($options['videos'])) {
+            if (count($options['videos']) > 2) {
+                throw new ValidationException('Maximum 2 videos allowed');
+            }
+            foreach ($options['videos'] as $video) {
+                if (!preg_match('/^data:video\/(mp4|webm|quicktime);base64,/', $video)) {
+                    throw new ValidationException('Videos must be base64-encoded data URLs (MP4, WebM, or QuickTime)');
                 }
             }
         }
@@ -106,6 +118,9 @@ class SupportDockClient
         }
         if (!empty($options['images'])) {
             $body['images'] = $options['images'];
+        }
+        if (!empty($options['videos'])) {
+            $body['videos'] = $options['videos'];
         }
         if (!empty($options['attachments'])) {
             $body['attachments'] = $options['attachments'];
