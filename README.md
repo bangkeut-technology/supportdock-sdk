@@ -1,6 +1,6 @@
 # SupportDock PHP SDK
 
-Submit feedback and manage FAQs from your PHP application.
+Submit feedback, manage FAQs and report errors from your PHP application.
 
 ## Requirements
 
@@ -148,6 +148,47 @@ try {
     echo "Error ({$e->getStatusCode()}): " . $e->getMessage();
 }
 ```
+
+## Monitoring (opt-in)
+
+Errors and crashes from your PHP app, shown next to your feedback in SupportDock (app → **Monitoring**, runtime `php`). It authenticates with the same API key. Nothing is sent until you create a `Monitor`, and the feedback client above is unchanged.
+
+```php
+use SupportDock\Monitoring\Monitor;
+
+$monitor = new Monitor([
+    'projectKey' => 'sdk_your_api_key',
+    'release' => getenv('GIT_SHA') ?: null, // see "Releases" below
+]);
+
+// Uncaught exceptions and fatal errors (memory, timeouts), then the queue is
+// sent when the script ends. Your previous exception handler still runs.
+$monitor->registerHandlers();
+
+try {
+    chargeCard($order);
+} catch (\Throwable $e) {
+    $monitor->captureException($e, ['route' => 'POST /orders']);
+    throw $e;
+}
+```
+
+Events are queued and sent in one batch (gzipped when zlib is available) when the script ends, or when you call `$monitor->flush()`, for example from your framework's terminate hook so it runs after the response. A batch that can't be sent is dropped, and monitoring never throws into your code.
+
+| Option | Default | |
+|---|---|---|
+| `projectKey` | — | Your app API key (`sdk_…`) |
+| `release` | auto | Then `SUPPORTDOCK_RELEASE`, `GIT_SHA`, `SOURCE_VERSION`, `GITHUB_SHA`, else `unknown` |
+| `beforeSend` | none | `fn (array $event): ?array`: change an event, or return `null` to drop it |
+| `ingestUrl` | `https://supportdock.io/ingest` | |
+| `timeout` | `2` | Seconds for the send |
+| `debug` | `false` | Log delivery failures with `error_log()` |
+
+Context is `route`, `screen`, `device` and `os` (filled with the OS and PHP version when you don't set it). Errors are grouped by class and the top five frames of your own code (`vendor/` skipped), never by line number, so one bug stays one group across deploys.
+
+**Personal data.** An exception message carries whatever the code put in it, SQL parameters included (Doctrine puts them in the message). Scrub messages in `beforeSend` before they leave the process.
+
+**Releases** are what let SupportDock say "this error started in `a1b2c3d`". Set one per deploy.
 
 ## API reference
 
