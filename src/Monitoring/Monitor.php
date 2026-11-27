@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SupportDock\Monitoring;
 
+use SupportDock\Exception\ValidationException;
+
 /**
  * Error monitoring for PHP apps: errors you capture, and optionally uncaught
  * exceptions and fatal errors, reported to SupportDock (app → Monitoring) with
@@ -62,10 +64,19 @@ final class Monitor
      * or not), or null to drop it. Use it to scrub personal data out of
      * messages: unlike the JS SDK's query instrumentation, a PHP exception
      * message can carry anything the code put in it, SQL parameters included.
+     *
+     * A missing projectKey is a setup mistake, not a runtime failure, so it
+     * throws here, like the client's apiKey does: otherwise every event would
+     * be sent without a key and dropped without a word.
+     *
+     * @throws ValidationException when projectKey is missing or empty
      */
     public function __construct(array $config)
     {
-        $projectKey = (string) ($config['projectKey'] ?? '');
+        $projectKey = trim((string) ($config['projectKey'] ?? ''));
+        if ($projectKey === '') {
+            throw new ValidationException('projectKey is required (your app\'s SDK key, sdk_…)');
+        }
         $this->release = self::detectRelease($config['release'] ?? null);
         $this->beforeSend = $config['beforeSend'] ?? null;
         $this->transport = $config['transport'] ?? new CurlTransport(
