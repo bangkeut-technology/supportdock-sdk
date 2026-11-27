@@ -2,6 +2,8 @@
 
 Submit feedback, manage FAQs and report errors from your PHP application.
 
+SupportDock is a product of [bill&go](https://billandgo.app).
+
 ## Requirements
 
 - PHP 8.1+
@@ -202,4 +204,4 @@ Context is `route`, `screen`, `device` and `os` (filled with the OS and PHP vers
 
 ## License
 
-MIT
+MIT © SupportDock by [bill&go](https://billandgo.app)

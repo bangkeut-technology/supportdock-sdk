@@ -4,6 +4,7 @@
     "description": "SupportDock PHP SDK — submit feedback, manage FAQs and report errors from your PHP application",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://supportdock.io",
     "keywords": [
         "supportdock",
         "feedback",
@@ -13,8 +14,9 @@
     ],
     "authors": [
         {
-            "name": "SupportDock",
-            "email": "support@supportdock.io"
+            "name": "SupportDock by bill&go",
+            "email": "support@supportdock.io",
+            "homepage": "https://billandgo.app"
         }
     ],
     "require": {
