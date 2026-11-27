@@ -234,7 +234,7 @@ try {
 
 | Option | Default | |
 |---|---|---|
-| `projectKey` | — | Your app's SDK key (`sdk_…`) |
+| `projectKey` | — | Required. Your app's SDK key (`sdk_…`). Missing or empty throws `ValidationException` |
 | `release` | auto | Then `SUPPORTDOCK_RELEASE`, `GIT_SHA`, `SOURCE_VERSION`, `GITHUB_SHA`, else `unknown` |
 | `beforeSend` | none | `fn (array $event): ?array`: change an event, or return `null` to drop it |
 | `ingestUrl` | `https://supportdock.io/ingest` | |

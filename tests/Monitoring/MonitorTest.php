@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use SupportDock\Monitoring\Fingerprint;
 use SupportDock\Monitoring\Monitor;
 use SupportDock\Monitoring\Transport;
+use SupportDock\Exception\ValidationException;
 
 final class MonitorTest extends TestCase
 {
@@ -102,6 +103,12 @@ final class MonitorTest extends TestCase
         // The queue keeps the newest 1000, sent as 500 + 500.
         $this->assertSame([500, 500], array_map('count', $this->transport->batches));
         $this->assertSame('RuntimeException: e200', $this->transport->batches[0][0]['message']);
+    }
+
+    public function testAMissingProjectKeyThrows(): void
+    {
+        $this->expectException(ValidationException::class);
+        new Monitor(['projectKey' => '  ', 'transport' => $this->transport]);
     }
 
     public function testABrokenTransportNeverThrows(): void
